@@ -19,3 +19,11 @@ Feature: Overdue book
     And 28 days have passed
     Then the user has no overdue books
     And the user has to pay no fine
+
+  Scenario: Overdue CD after only 8 days
+    Given a user is registered with the library
+    And the user has borrowed a CD
+    Then the user has to pay no fine
+    Given 8 days have passed
+    Then the user has overdue CDs
+    And the user has to pay a fine of 200 DKK

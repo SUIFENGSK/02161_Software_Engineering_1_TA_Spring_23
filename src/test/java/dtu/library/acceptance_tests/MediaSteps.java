@@ -306,4 +306,17 @@ public class MediaSteps {
     public void theCdWithTitleAuthorAndSignatureIsContainedInTheLibrary(String title, String author, String signature) {
         assertTrue(libraryApp.containsMediaWithSignature(signature));
     }
+
+    @Given("the user has borrowed a CD")
+    public void theUserHasBorrowedACD() throws Exception {
+        medium = new Cd("title", "author", "signature");
+        libraryApp.adminLogin("adminadmin");
+        libraryApp.addMedium(medium);
+        libraryApp.borrowMedium(helper.getUser().getCpr(), medium.getSignature());
+    }
+
+    @Then("the user has overdue CDs")
+    public void theUserHasOverdueCDs() {
+        assertTrue(libraryApp.userHasOverdueMedia(helper.getUser()));
+    }
 }
