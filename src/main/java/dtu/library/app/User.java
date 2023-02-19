@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class User {
-    private String cpr;
-    private String name;
-    private String email;
+    private final String cpr;
+    private final String name;
+    private final String email;
     private Address address;
-    private List<Medium> borrowedMedia = new ArrayList<>();
+    private final List<Medium> borrowedMedia = new ArrayList<>();
 
     private double fine = 0d;
 

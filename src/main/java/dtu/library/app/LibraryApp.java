@@ -8,8 +8,7 @@ public class LibraryApp {
 
     public boolean adminLoggedIn = false;
     public List<Medium> media = new ArrayList<>();
-    public List<Cd> cds = new ArrayList<>();
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     private DateServer dateServer = new DateServer();
     private EmailServer emailServer = new EmailServer();
@@ -86,6 +85,7 @@ public class LibraryApp {
     public void borrowMedium(String cpr, String signature) throws Exception {
         User user = getUser(cpr);
         Medium medium = getMediumFromSignature(signature);
+        assert medium != null;
         user.borrowBook(medium, dateServer.getDate());
     }
 
@@ -131,9 +131,7 @@ public class LibraryApp {
         Calendar currentDate = dateServer.getDate();
         users.stream()
                 .filter(u -> u.hasOverdueMedia(currentDate))
-                .forEach(u -> {
-                    u.sendEmailReminder(emailServer, currentDate);
-                });
+                .forEach(u -> u.sendEmailReminder(emailServer, currentDate));
     }
 
     private void checkAdministratorLoggedIn() throws OperationNotAllowedException {

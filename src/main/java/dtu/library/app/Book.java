@@ -18,8 +18,4 @@ public class Book extends Medium {
         return FINE;
     }
 
-    @Override
-    public String getTypeName() {
-        return "Book";
-    }
 }

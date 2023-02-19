@@ -1,9 +1,9 @@
 package dtu.library.app;
 
 public class Address {
-    private String street;
-    private int postCode;
-    private String city;
+    private final String street;
+    private final int postCode;
+    private final String city;
 
     public Address(String street, int postCode, String city) {
         this.street = street;

@@ -17,13 +17,13 @@ import io.cucumber.java.en.When;
 
 public class MediaSteps {
 
-    private LibraryApp libraryApp;
-    private ErrorMessageHolder errorMessageHolder;
+    private final LibraryApp libraryApp;
+    private final ErrorMessageHolder errorMessageHolder;
     private Medium medium;
     private List<Medium> media;
-    private UserHelper helper;
-    private MockDateHolder dateHolder;
-    private BookHelper bookHelper;
+    private final UserHelper helper;
+    private final MockDateHolder dateHolder;
+    private final BookHelper bookHelper;
 
     /*
      * Note that the constructor is apparently never called, but there are no null
@@ -48,7 +48,7 @@ public class MediaSteps {
     }
 
     @Given("there is a book with title {string}, author {string}, and signature {string}")
-    public void thereIsABookWithTitleAuthorAndSignature(String title, String author, String signature) throws Exception {
+    public void thereIsABookWithTitleAuthorAndSignature(String title, String author, String signature) {
         medium = new Book(title, author, signature);
     }
 
@@ -75,13 +75,12 @@ public class MediaSteps {
     }
 
     @Then("the book with title {string}, author {string}, and signature {string} is contained in the library")
-    public void theBookWithTitleAuthorAndSignatureIsContainedInTheLibrary(String title, String author, String signature)
-            throws Exception {
+    public void theBookWithTitleAuthorAndSignatureIsContainedInTheLibrary(String title, String author, String signature) {
         assertTrue(libraryApp.containsMediaWithSignature(signature));
     }
 
     @Then("the error message {string} is given")
-    public void theErrorMessageIsGiven(String errorMessage) throws Exception {
+    public void theErrorMessageIsGiven(String errorMessage) {
         assertEquals(errorMessage, this.errorMessageHolder.getErrorMessage());
     }
 
@@ -93,23 +92,23 @@ public class MediaSteps {
     }
 
     @When("the user searches for the text {string}")
-    public void theUserSearchesForTheText(String searchText) throws Exception {
+    public void theUserSearchesForTheText(String searchText) {
         media = libraryApp.search(searchText);
     }
 
     @Then("the book with signature {string} is found")
-    public void theBookWithSignatureIsFound(String signature) throws Exception {
+    public void theBookWithSignatureIsFound(String signature) {
         assertEquals(1, media.size());
         assertEquals(signature, media.get(0).getSignature());
     }
 
     @Then("no books are found")
-    public void noBooksAreFound() throws Exception {
+    public void noBooksAreFound() {
         assertTrue(media.isEmpty());
     }
 
     @Then("the books with signatures {string} and {string} are found")
-    public void theBooksWithSignaturesAndAreFound(String signature1, String signature2) throws Exception {
+    public void theBooksWithSignaturesAndAreFound(String signature1, String signature2) {
         assertEquals(2, media.size());
         Medium medium1 = media.get(0);
         Medium medium2 = media.get(1);
@@ -143,8 +142,8 @@ public class MediaSteps {
     }
 
     @Given("the user has borrowed {int} books")
-    public void theUserHasBorrowedBooks(Integer int1) throws Exception {
-        List<Medium> exampleMedia = getExampleBooks(10);
+    public void theUserHasBorrowedBooks(Integer numberOfBooks) throws Exception {
+        List<Medium> exampleMedia = getExampleBooks(numberOfBooks);
         addBooksToLibrary(exampleMedia);
         for (Medium b : exampleMedia) {
             libraryApp.borrowMedium(helper.getUser().getCpr(), b.getSignature());
@@ -211,7 +210,7 @@ public class MediaSteps {
     }
 
     @When("the user borrows the book with signature {string}")
-    public void theUserBorrowsTheBookWithSignature(String signature) throws Exception {
+    public void theUserBorrowsTheBookWithSignature(String signature) {
         try {
             libraryApp.borrowMedium(helper.getUser().getCpr(), signature);
         } catch (Exception e) {
@@ -220,7 +219,7 @@ public class MediaSteps {
     }
 
     @Then("the book with signature {string} is not borrowed by the user")
-    public void theBookWithSignatureIsNotBorrowedByTheUser(String signature) throws Exception {
+    public void theBookWithSignatureIsNotBorrowedByTheUser(String signature) {
         assertThat(libraryApp.userHasBorrowedMedium(helper.getUser().getCpr(), signature), is(false));
     }
 
@@ -248,12 +247,12 @@ public class MediaSteps {
     }
 
     @When("the user pays {int} DKK")
-    public void theUserPaysDKK(int money) throws Exception {
+    public void theUserPaysDKK(int money) {
         libraryApp.payFine(helper.getUser(), money);
     }
 
     @Then("the user can borrow books again")
-    public void theUserCanBorrowBooksAgain() throws Exception {
+    public void theUserCanBorrowBooksAgain() {
         assertThat(libraryApp.canBorrow(helper.getUser()), is(true));
     }
 
@@ -269,7 +268,7 @@ public class MediaSteps {
     }
 
     @Then("the user cannot borrow books")
-    public void theUserCannotBorrowBooks() throws Exception {
+    public void theUserCannotBorrowBooks() {
         assertThat(libraryApp.canBorrow(helper.getUser()), is(false));
     }
 

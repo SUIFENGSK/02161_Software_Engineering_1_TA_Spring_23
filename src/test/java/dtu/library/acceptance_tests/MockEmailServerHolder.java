@@ -6,7 +6,7 @@ import dtu.library.app.LibraryApp;
 import static org.mockito.Mockito.mock;
 
 public class MockEmailServerHolder {
-    private EmailServer mockEmailServer = mock(EmailServer.class);
+    private final EmailServer mockEmailServer = mock(EmailServer.class);
 
     public MockEmailServerHolder(LibraryApp libraryApp) {
         libraryApp.setEmailServer(mockEmailServer);
@@ -16,7 +16,4 @@ public class MockEmailServerHolder {
         return mockEmailServer;
     }
 
-    public void setMockEmailServer(EmailServer mockEmailServer) {
-        this.mockEmailServer = mockEmailServer;
-    }
 }

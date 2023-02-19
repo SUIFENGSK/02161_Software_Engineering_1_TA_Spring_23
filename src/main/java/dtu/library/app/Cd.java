@@ -18,8 +18,4 @@ public class Cd extends Medium {
         return FINE;
     }
 
-    @Override
-    public String getTypeName() {
-        return "CD";
-    }
 }

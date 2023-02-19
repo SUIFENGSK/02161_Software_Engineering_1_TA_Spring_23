@@ -10,7 +10,7 @@ import io.cucumber.java.en.When;
 
 public class LoginLogoutSteps {
 
-    private LibraryApp libraryApp;
+    private final LibraryApp libraryApp;
     private String password;
 
     /*
@@ -33,22 +33,22 @@ public class LoginLogoutSteps {
     }
 
     @Given("that the administrator is not logged in")
-    public void thatTheAdministratorIsNotLoggedIn() throws Exception {
+    public void thatTheAdministratorIsNotLoggedIn() {
         assertFalse(libraryApp.adminLoggedIn());
     }
 
     @Given("the password is {string}")
-    public void thePasswordIs(String password) throws Exception {
+    public void thePasswordIs(String password) {
         this.password = password;
     }
 
     @Then("the administrator login succeeds")
-    public void theAdministratorLoginSucceeds() throws Exception {
+    public void theAdministratorLoginSucceeds() {
         assertTrue(libraryApp.adminLogin(password));
     }
 
-    @Then("the adminstrator is logged in")
-    public void theAdminstratorIsLoggedIn() throws Exception {
+    @Then("the administrator is logged in")
+    public void theAdministratorIsLoggedIn() {
         assertTrue(libraryApp.adminLoggedIn());
     }
 

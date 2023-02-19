@@ -15,11 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class UserSteps {
-    private LibraryApp libraryApp;
-    private ErrorMessageHolder errorMessage;
-    private UserHelper helper;
-    private Address address;
-    private User user;
+    private final LibraryApp libraryApp;
+    private final ErrorMessageHolder errorMessage;
+    private final UserHelper helper;
 
     public UserSteps(LibraryApp libraryApp, ErrorMessageHolder errorMessage, UserHelper helper) {
         this.libraryApp = libraryApp;
@@ -38,7 +36,7 @@ public class UserSteps {
 
     @Given("the user has address street {string}, post code {int}, and city {string}")
     public void theUserHasAddressStreetPostCodeAndCity(String street, Integer postCode, String city) {
-        address = new Address(street, postCode, city);
+        Address address = new Address(street, postCode, city);
         assertThat(address.getStreet(), is(equalTo(street)));
         assertThat(address.getPostCode(), is(equalTo(postCode)));
         assertThat(address.getCity(), is(equalTo(city)));
@@ -47,7 +45,7 @@ public class UserSteps {
     }
 
     @When("the administrator registers the user")
-    public void theAdministratorRegistersTheUser() throws OperationNotAllowedException {
+    public void theAdministratorRegistersTheUser() {
         try {
             libraryApp.registerUser(helper.getUser());
         } catch (OperationNotAllowedException e) {
@@ -76,7 +74,7 @@ public class UserSteps {
     }
 
     @When("the administrator registers the user again")
-    public void theAdministratorRegistersTheUserAgain() throws OperationNotAllowedException {
+    public void theAdministratorRegistersTheUserAgain() {
         theAdministratorRegistersTheUser();
     }
 
@@ -101,7 +99,7 @@ public class UserSteps {
     }
 
     @When("the administrator unregisters that user")
-    public void theAdministratorUnregistersThatUser() throws Exception {
+    public void theAdministratorUnregistersThatUser() {
         try {
             libraryApp.unregister(helper.getUser());
         } catch (Exception e) {
@@ -110,17 +108,16 @@ public class UserSteps {
     }
 
     @Then("the user is not registered with the library")
-    public void theUserIsNotRegisteredWithTheLibrary() throws Exception {
+    public void theUserIsNotRegisteredWithTheLibrary() {
         assertFalse(libraryApp.hasUser(helper.getUser().getCpr()));
     }
 
     @Then("the user is still registered with the library")
-    public void theUserIsStillRegisteredWithTheLibrary() throws Exception {
+    public void theUserIsStillRegisteredWithTheLibrary() {
         assertTrue(libraryApp.hasUser(helper.getUser().getCpr()));
     }
 
     @Given("a user is not registered with the library")
-    public void aUserIsNotRegisteredWithTheLibrary() throws Exception {
-        user = helper.getUser();
+    public void aUserIsNotRegisteredWithTheLibrary() {
     }
 }

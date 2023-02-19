@@ -11,11 +11,9 @@ import java.util.GregorianCalendar;
  * @author Hubert
  */
 public abstract class Medium {
-    private static final int FINE = 100;
-    private static final int MAX_NUMBER_OF_DAYS = 4 * 7;
-    private String title;
-    private String author;
-    private String signature;
+    private final String title;
+    private final String author;
+    private final String signature;
     private Calendar dueDate;
 
     public Medium(String title, String author, String signature) {
@@ -60,5 +58,4 @@ public abstract class Medium {
         getDueDate().add(Calendar.DAY_OF_YEAR, getMaxBorrowDays());
     }
 
-    public abstract String getTypeName();
 }
