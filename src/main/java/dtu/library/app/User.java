@@ -10,7 +10,7 @@ public class User {
     private String name;
     private String email;
     private Address address;
-    private List<Book> borrowedBooks = new ArrayList<>();
+    private List<Medium> borrowedMedia = new ArrayList<>();
 
     private double fine = 0d;
 
@@ -42,28 +42,28 @@ public class User {
         return address;
     }
 
-    public void borrowBook(Book book, Calendar borrowDate) throws Exception {
+    public void borrowBook(Medium medium, Calendar borrowDate) throws Exception {
         canBorrow(borrowDate);
-        book.setDueDateFromBorrowDate(borrowDate);
-        borrowedBooks.add(book);
+        medium.setDueDateFromBorrowDate(borrowDate);
+        borrowedMedia.add(medium);
     }
 
-    public boolean hasBorrowed(Book book) {
-        return borrowedBooks.contains(book);
+    public boolean hasBorrowed(Medium medium) {
+        return borrowedMedia.contains(medium);
     }
 
-    public void returnBook(Book book) throws TooManyMediaException {
-        if (!borrowedBooks.contains(book)) {
+    public void returnBook(Medium medium) throws TooManyMediaException {
+        if (!borrowedMedia.contains(medium)) {
             throw new TooManyMediaException("book is not borrowed by the user");
         }
-        borrowedBooks.remove(book);
+        borrowedMedia.remove(medium);
     }
 
     public double getFine(Calendar currentDate) {
         if (!hasFine) {
-            double fineValue = borrowedBooks.stream()
+            double fineValue = borrowedMedia.stream()
                     .filter(b -> b.isOverdue(currentDate))
-                    .mapToDouble(Book::getFine)
+                    .mapToDouble(Medium::getFine)
                     .sum();
             if (fineValue == 0) {
                 fine = 0;
@@ -76,12 +76,12 @@ public class User {
         return hasFine ? fine : 0;
     }
 
-    public boolean hasOverdueBooks(Calendar date) {
-        return borrowedBooks.stream().anyMatch(b -> b.isOverdue(date));
+    public boolean hasOverdueMedia(Calendar date) {
+        return borrowedMedia.stream().anyMatch(b -> b.isOverdue(date));
     }
 
     public void sendEmailReminder(EmailServer emailServer, Calendar currentDate) {
-        long numberOfOverdueMedia = borrowedBooks.stream()
+        long numberOfOverdueMedia = borrowedMedia.stream()
                 .filter(b -> b.isOverdue(currentDate))
                 .count();
         emailServer.sendEmail(email,
@@ -100,10 +100,10 @@ public class User {
     }
 
     public void canBorrow(Calendar borrowDate) throws Exception {
-        if (borrowedBooks.size() >= 10) {
+        if (borrowedMedia.size() >= 10) {
             throw new TooManyMediaException("Can't borrow more than 10 books");
         }
-        if (hasOverdueBooks(borrowDate)) {
+        if (hasOverdueMedia(borrowDate)) {
             throw new OperationNotAllowedException("Can't borrow book/CD if user has overdue books/CDs");
         }
         if (hasFine) {
@@ -111,7 +111,7 @@ public class User {
         }
     }
 
-    public List<Book> getBorrowedBooks() {
-        return Collections.unmodifiableList(borrowedBooks);
+    public List<Medium> getBorrowedMedia() {
+        return Collections.unmodifiableList(borrowedMedia);
     }
 }

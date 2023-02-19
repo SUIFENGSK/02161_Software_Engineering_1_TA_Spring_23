@@ -1,6 +1,7 @@
 package dtu.library.acceptance_tests;
 
 import dtu.library.app.Book;
+import dtu.library.app.Medium;
 import dtu.library.app.LibraryApp;
 import dtu.library.app.OperationNotAllowedException;
 
@@ -15,19 +16,19 @@ public class BookHelper {
     }
 
 
-    public List<Book> getExampleBooks(int n) {
-        List<Book> books = new ArrayList<>();
+    public List<Medium> getExampleBooks(int n) {
+        List<Medium> media = new ArrayList<>();
         for (int i = 1; i <= n; i++) {
-            books.add(new Book("title" + i, "author" + i, "signature" + i));
+            media.add(new Book("title" + i, "author" + i, "signature" + i));
         }
-        return books;
+        return media;
     }
 
-    public void addBooksToLibrary(List<Book> books) {
+    public void addBooksToLibrary(List<Medium> media) {
         libraryApp.adminLogin("adminadmin");
-        for (Book b : books) {
+        for (Medium b : media) {
             try {
-                libraryApp.addBook(b);
+                libraryApp.addMedium(b);
             } catch (OperationNotAllowedException e) {
                 e.printStackTrace();
             }

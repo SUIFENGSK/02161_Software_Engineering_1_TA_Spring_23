@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,14 +14,13 @@ import dtu.library.app.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.Assertions;
 
-public class BookSteps {
+public class MediaSteps {
 
     private LibraryApp libraryApp;
     private ErrorMessageHolder errorMessageHolder;
-    private Book book;
-    private List<Book> books;
+    private Medium medium;
+    private List<Medium> media;
     private UserHelper helper;
     private MockDateHolder dateHolder;
     private BookHelper bookHelper;
@@ -41,7 +39,7 @@ public class BookSteps {
      * This principle is called <em>dependency injection</em>. More information can
      * be found in the "Cucumber for Java" book available online from the DTU Library.
      */
-    public BookSteps(LibraryApp libraryApp, ErrorMessageHolder errorMessageHolder, UserHelper helper, MockDateHolder dateHolder, BookHelper bookHelper) {
+    public MediaSteps(LibraryApp libraryApp, ErrorMessageHolder errorMessageHolder, UserHelper helper, MockDateHolder dateHolder, BookHelper bookHelper) {
         this.libraryApp = libraryApp;
         this.errorMessageHolder = errorMessageHolder;
         this.helper = helper;
@@ -51,26 +49,26 @@ public class BookSteps {
 
     @Given("there is a book with title {string}, author {string}, and signature {string}")
     public void thereIsABookWithTitleAuthorAndSignature(String title, String author, String signature) throws Exception {
-        book = new Book(title, author, signature);
+        medium = new Book(title, author, signature);
     }
 
     @Given("the book is not in the library")
     public void theBookIsNotInTheLibrary() {
-        assertFalse(libraryApp.containsBookWithSignature(book.getSignature()));
+        assertFalse(libraryApp.containsMediaWithSignature(medium.getSignature()));
     }
 
 
     @Given("these books are contained in the library")
     public void theseBooksAreContainedInTheLibrary(List<List<String>> books) throws Exception {
         for (List<String> bookInfo : books) {
-            libraryApp.addBook(new Book(bookInfo.get(0), bookInfo.get(1), bookInfo.get(2)));
+            libraryApp.addMedium(new Book(bookInfo.get(0), bookInfo.get(1), bookInfo.get(2)));
         }
     }
 
     @When("the book is added to the library")
     public void bookIsAddedToTheLibrary() {
         try {
-            libraryApp.addBook(book);
+            libraryApp.addMedium(medium);
         } catch (OperationNotAllowedException e) {
             errorMessageHolder.setErrorMessage(e.getMessage());
         }
@@ -79,7 +77,7 @@ public class BookSteps {
     @Then("the book with title {string}, author {string}, and signature {string} is contained in the library")
     public void theBookWithTitleAuthorAndSignatureIsContainedInTheLibrary(String title, String author, String signature)
             throws Exception {
-        assertTrue(libraryApp.containsBookWithSignature(signature));
+        assertTrue(libraryApp.containsMediaWithSignature(signature));
     }
 
     @Then("the error message {string} is given")
@@ -90,50 +88,50 @@ public class BookSteps {
     @Given("the library has a book with title {string}, author {string}, and signature {string}")
     public void theLibraryHasABookWithTitleAuthorAndSignature(String title, String author, String signature)
             throws Exception {
-        Book book = new Book(title, author, signature);
-        libraryApp.addBook(book);
+        Medium medium = new Book(title, author, signature);
+        libraryApp.addMedium(medium);
     }
 
     @When("the user searches for the text {string}")
     public void theUserSearchesForTheText(String searchText) throws Exception {
-        books = libraryApp.search(searchText);
+        media = libraryApp.search(searchText);
     }
 
     @Then("the book with signature {string} is found")
     public void theBookWithSignatureIsFound(String signature) throws Exception {
-        assertEquals(1, books.size());
-        assertEquals(signature, books.get(0).getSignature());
+        assertEquals(1, media.size());
+        assertEquals(signature, media.get(0).getSignature());
     }
 
     @Then("no books are found")
     public void noBooksAreFound() throws Exception {
-        assertTrue(books.isEmpty());
+        assertTrue(media.isEmpty());
     }
 
     @Then("the books with signatures {string} and {string} are found")
     public void theBooksWithSignaturesAndAreFound(String signature1, String signature2) throws Exception {
-        assertEquals(2, books.size());
-        Book book1 = books.get(0);
-        Book book2 = books.get(1);
-        assertTrue((book1.getSignature().equals(signature1) && book2.getSignature().equals(signature2))
-                || (book1.getSignature().equals(signature2) && book2.getSignature().equals(signature1)));
+        assertEquals(2, media.size());
+        Medium medium1 = media.get(0);
+        Medium medium2 = media.get(1);
+        assertTrue((medium1.getSignature().equals(signature1) && medium2.getSignature().equals(signature2))
+                || (medium1.getSignature().equals(signature2) && medium2.getSignature().equals(signature1)));
     }
 
     @Given("a book with signature {string} is in the library")
     public void aBookWithSignatureIsInTheLibrary(String signature) throws OperationNotAllowedException {
-        book = new Book("title", "author", signature);
-        addBookToLibrary(book);
+        medium = new Book("title", "author", signature);
+        addBookToLibrary(medium);
     }
 
-    private void addBookToLibrary(Book book) throws OperationNotAllowedException {
+    private void addBookToLibrary(Medium medium) throws OperationNotAllowedException {
         libraryApp.adminLogin("adminadmin");
-        libraryApp.addBook(book);
+        libraryApp.addMedium(medium);
     }
 
     @When("the user borrows the book")
     public void theUserBorrowsTheBook() {
         try {
-            libraryApp.borrowBook(helper.getUser().getCpr(), book.getSignature());
+            libraryApp.borrowMedium(helper.getUser().getCpr(), medium.getSignature());
         } catch (Exception e) {
             errorMessageHolder.setErrorMessage(e.getMessage());
         }
@@ -141,21 +139,21 @@ public class BookSteps {
 
     @Then("the book is borrowed by the user")
     public void theBookIsBorrowedByTheUser() {
-        assertTrue(libraryApp.userHasBorrowedBook(helper.getUser().getCpr(), book.getSignature()));
+        assertTrue(libraryApp.userHasBorrowedMedium(helper.getUser().getCpr(), medium.getSignature()));
     }
 
     @Given("the user has borrowed {int} books")
     public void theUserHasBorrowedBooks(Integer int1) throws Exception {
-        List<Book> exampleBooks = getExampleBooks(10);
-        addBooksToLibrary(exampleBooks);
-        for (Book b : exampleBooks) {
-            libraryApp.borrowBook(helper.getUser().getCpr(), b.getSignature());
+        List<Medium> exampleMedia = getExampleBooks(10);
+        addBooksToLibrary(exampleMedia);
+        for (Medium b : exampleMedia) {
+            libraryApp.borrowMedium(helper.getUser().getCpr(), b.getSignature());
         }
     }
 
-    private void addBooksToLibrary(List<Book> exampleBooks) {
+    private void addBooksToLibrary(List<Medium> exampleMedia) {
         libraryApp.adminLogin("adminadmin");
-        for (Book b : exampleBooks) {
+        for (Medium b : exampleMedia) {
             try {
                 addBookToLibrary(b);
             } catch (OperationNotAllowedException e) {
@@ -164,30 +162,30 @@ public class BookSteps {
         }
     }
 
-    private List<Book> getExampleBooks(int n) {
-        List<Book> books = new ArrayList<>();
+    private List<Medium> getExampleBooks(int n) {
+        List<Medium> media = new ArrayList<>();
         for (int i = 1; i <= n; i++) {
-            books.add(new Book("title" + i, "author" + i, "signature" + i));
+            media.add(new Book("title" + i, "author" + i, "signature" + i));
         }
-        return books;
+        return media;
     }
 
     @Then("the book is not borrowed by the user")
     public void theBookIsNotBorrowedByTheUser() {
-        assertFalse(libraryApp.userHasBorrowedBook(helper.getUser().getCpr(), book.getSignature()));
+        assertFalse(libraryApp.userHasBorrowedMedium(helper.getUser().getCpr(), medium.getSignature()));
     }
 
     @Given("that the user has borrowed a book")
     public void thatTheUserHasBorrowedABook() throws Exception {
-        book = new Book("title", "author", "signature");
-        addBookToLibrary(book);
-        libraryApp.borrowBook(helper.getUser().getCpr(), book.getSignature());
+        medium = new Book("title", "author", "signature");
+        addBookToLibrary(medium);
+        libraryApp.borrowMedium(helper.getUser().getCpr(), medium.getSignature());
     }
 
     @When("the user returns the book")
     public void theUserReturnsTheBook() {
         try {
-            libraryApp.returnBook(helper.getUser().getCpr(), book.getSignature());
+            libraryApp.returnMedium(helper.getUser().getCpr(), medium.getSignature());
         } catch (TooManyMediaException e) {
             errorMessageHolder.setErrorMessage(e.getMessage());
         }
@@ -195,8 +193,8 @@ public class BookSteps {
 
     @Given("that the user not borrowed the book")
     public void thatTheUserNotBorrowedTheBook() throws OperationNotAllowedException {
-        book = new Book("title", "author", "signature");
-        addBookToLibrary(book);
+        medium = new Book("title", "author", "signature");
+        addBookToLibrary(medium);
     }
 
     @Given("the user has borrowed a book")
@@ -209,13 +207,13 @@ public class BookSteps {
         libraryApp.registerUser(helper.getUser());
         thatTheUserHasBorrowedABook();
         dateHolder.advanceDateByDays(29);
-        assertThat(libraryApp.userHasOverdueBooks(helper.getUser()), is(true));
+        assertThat(libraryApp.userHasOverdueMedia(helper.getUser()), is(true));
     }
 
     @When("the user borrows the book with signature {string}")
     public void theUserBorrowsTheBookWithSignature(String signature) throws Exception {
         try {
-            libraryApp.borrowBook(helper.getUser().getCpr(), signature);
+            libraryApp.borrowMedium(helper.getUser().getCpr(), signature);
         } catch (Exception e) {
             errorMessageHolder.setErrorMessage(e.getMessage());
         }
@@ -223,13 +221,13 @@ public class BookSteps {
 
     @Then("the book with signature {string} is not borrowed by the user")
     public void theBookWithSignatureIsNotBorrowedByTheUser(String signature) throws Exception {
-        assertThat(libraryApp.userHasBorrowedBook(helper.getUser().getCpr(), signature), is(false));
+        assertThat(libraryApp.userHasBorrowedMedium(helper.getUser().getCpr(), signature), is(false));
     }
 
     @When("the user returns the book with signature {string}")
     public void theUserReturnsTheBookWithSignature(String string) {
         try {
-            libraryApp.returnBook(helper.getUser().getCpr(), string);
+            libraryApp.returnMedium(helper.getUser().getCpr(), string);
         } catch (TooManyMediaException e) {
             errorMessageHolder.setErrorMessage(e.getMessage());
         }
@@ -241,12 +239,12 @@ public class BookSteps {
         libraryApp.adminLogin("adminadmin");
         libraryApp.registerUser(user);
         libraryApp.adminLogout();
-        List<Book> books = bookHelper.getExampleBooks(1);
-        bookHelper.addBooksToLibrary(books);
-        book = books.get(0);
-        libraryApp.borrowBook(user.getCpr(), book.getSignature());
+        List<Medium> media = bookHelper.getExampleBooks(1);
+        bookHelper.addBooksToLibrary(media);
+        medium = media.get(0);
+        libraryApp.borrowMedium(user.getCpr(), medium.getSignature());
         dateHolder.advanceDateByDays(29);
-        assertThat(libraryApp.userHasBorrowedBook(user.getCpr(), book.getSignature()), is(true));
+        assertThat(libraryApp.userHasBorrowedMedium(user.getCpr(), medium.getSignature()), is(true));
     }
 
     @When("the user pays {int} DKK")
@@ -261,13 +259,13 @@ public class BookSteps {
 
     @Given("the user has another overdue book")
     public void theUserHasAnotherOverdueBook() throws Exception {
-        List<Book> books = new ArrayList<>();
-        books.add(new Book("title", "author", "signature"));
-        bookHelper.addBooksToLibrary(books);
-        book = books.get(0);
-        libraryApp.borrowBook(helper.getUser().getCpr(), book.getSignature());
+        List<Medium> media = new ArrayList<>();
+        media.add(new Book("title", "author", "signature"));
+        bookHelper.addBooksToLibrary(media);
+        medium = media.get(0);
+        libraryApp.borrowMedium(helper.getUser().getCpr(), medium.getSignature());
         dateHolder.advanceDateByDays(29);
-        assertThat(libraryApp.userHasOverdueBooks(helper.getUser()), is(true));
+        assertThat(libraryApp.userHasOverdueMedia(helper.getUser()), is(true));
     }
 
     @Then("the user cannot borrow books")
@@ -277,11 +275,35 @@ public class BookSteps {
 
     @Given("the user has to pay a fine")
     public void theUserHasToPayAFine() throws Exception {
-        book = new Book("title", "author", "signature");
-        bookHelper.addBooksToLibrary(Collections.singletonList(book));
-        libraryApp.borrowBook(helper.getUser().getCpr(), book.getSignature());
+        medium = new Book("title", "author", "signature");
+        bookHelper.addBooksToLibrary(Collections.singletonList(medium));
+        libraryApp.borrowMedium(helper.getUser().getCpr(), medium.getSignature());
         dateHolder.advanceDateByDays(29);
         assertTrue(libraryApp.getFineForUser(helper.getUser()) > 0);
-        libraryApp.returnBook(helper.getUser().getCpr(), book.getSignature());
+        libraryApp.returnMedium(helper.getUser().getCpr(), medium.getSignature());
+    }
+
+    @Given("there is a cd with title {string}, author {string}, and signature {string}")
+    public void thereIsACdWithTitleAuthorAndSignature(String title, String author, String signature) {
+        medium = new Cd(title, author, signature);
+    }
+
+    @Given("the cd is not in the library")
+    public void theCdIsNotInTheLibrary() {
+        assertFalse(libraryApp.containsMediaWithSignature(medium.getSignature()));
+    }
+
+    @When("the cd is added to the library")
+    public void theCdIsAddedToTheLibrary() {
+        try {
+            libraryApp.addMedium(medium);
+        } catch (OperationNotAllowedException e) {
+            errorMessageHolder.setErrorMessage(e.getMessage());
+        }
+    }
+
+    @Then("the cd with title {string}, author {string}, and signature {string} is contained in the library")
+    public void theCdWithTitleAuthorAndSignatureIsContainedInTheLibrary(String title, String author, String signature) {
+        assertTrue(libraryApp.containsMediaWithSignature(signature));
     }
 }

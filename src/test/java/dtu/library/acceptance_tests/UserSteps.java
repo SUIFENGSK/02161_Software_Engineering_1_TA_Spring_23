@@ -7,7 +7,6 @@ import dtu.library.app.User;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.Assertions;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -88,7 +87,7 @@ public class UserSteps {
 
     @Then("the user has overdue books")
     public void theUserHasOverdueBooks() {
-        assertThat(libraryApp.userHasOverdueBooks(helper.getUser()), is(true));
+        assertThat(libraryApp.userHasOverdueMedia(helper.getUser()), is(true));
     }
 
     @Then("the user has to pay a fine of {int} DKK")
@@ -98,7 +97,7 @@ public class UserSteps {
 
     @Then("the user has no overdue books")
     public void theUserHasNoOverdueBooks() {
-        assertThat(libraryApp.userHasOverdueBooks(helper.getUser()), is(false));
+        assertThat(libraryApp.userHasOverdueMedia(helper.getUser()), is(false));
     }
 
     @When("the administrator unregisters that user")

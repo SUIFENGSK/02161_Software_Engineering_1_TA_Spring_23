@@ -7,7 +7,7 @@ import java.util.List;
 public class LibraryApp {
 
     public boolean adminLoggedIn = false;
-    public List<Book> books = new ArrayList<>();
+    public List<Medium> media = new ArrayList<>();
     public List<Cd> cds = new ArrayList<>();
     private List<User> users = new ArrayList<>();
 
@@ -15,18 +15,18 @@ public class LibraryApp {
     private EmailServer emailServer = new EmailServer();
 
 
-    public void addBook(Book book) throws OperationNotAllowedException {
+    public void addMedium(Medium medium) throws OperationNotAllowedException {
         if (adminLoggedIn) {
-            books.add(book);
+            media.add(medium);
         } else {
             throw new OperationNotAllowedException("Administrator login required");
         }
     }
 
-    public boolean containsBookWithSignature(String signature) {
+    public boolean containsMediaWithSignature(String signature) {
         // return books.stream().anyMatch(book -> book.getSignature().equals(signature));
-        for (Book book : books) {
-            if (book.getSignature().equals(signature)) {
+        for (Medium medium : media) {
+            if (medium.getSignature().equals(signature)) {
                 return true;
             }
         }
@@ -49,12 +49,12 @@ public class LibraryApp {
         adminLoggedIn = false;
     }
 
-    public List<Book> search(String searchText) {
+    public List<Medium> search(String searchText) {
         // return books.stream().filter(book -> book.getSignature().contains(searchText)).collect(Collectors.toList());
-        List<Book> result = new ArrayList<>();
-        for (Book book : books) {
-            if (book.getSignature().contains(searchText) || book.getTitle().contains(searchText) || book.getAuthor().contains(searchText)) {
-                result.add(book);
+        List<Medium> result = new ArrayList<>();
+        for (Medium medium : media) {
+            if (medium.getSignature().contains(searchText) || medium.getTitle().contains(searchText) || medium.getAuthor().contains(searchText)) {
+                result.add(medium);
             }
         }
         return result;
@@ -83,31 +83,31 @@ public class LibraryApp {
         return getUser(user.getCpr()) != null;
     }
 
-    public void borrowBook(String cpr, String signature) throws Exception {
+    public void borrowMedium(String cpr, String signature) throws Exception {
         User user = getUser(cpr);
-        Book book = getBookFromSignature(signature);
-        user.borrowBook(book, dateServer.getDate());
+        Medium medium = getMediumFromSignature(signature);
+        user.borrowBook(medium, dateServer.getDate());
     }
 
-    private Book getBookFromSignature(String signature) {
-        for (Book book : books) {
-            if (book.getSignature().equals(signature)) {
-                return book;
+    private Medium getMediumFromSignature(String signature) {
+        for (Medium medium : media) {
+            if (medium.getSignature().equals(signature)) {
+                return medium;
             }
         }
         return null;
     }
 
-    public boolean userHasBorrowedBook(String cpr, String signature) {
+    public boolean userHasBorrowedMedium(String cpr, String signature) {
         User user = getUser(cpr);
-        Book book = getBookFromSignature(signature);
-        return user.hasBorrowed(book);
+        Medium medium = getMediumFromSignature(signature);
+        return user.hasBorrowed(medium);
     }
 
-    public void returnBook(String cpr, String signature) throws TooManyMediaException {
+    public void returnMedium(String cpr, String signature) throws TooManyMediaException {
         User user = getUser(cpr);
-        Book book = getBookFromSignature(signature);
-        user.returnBook(book);
+        Medium medium = getMediumFromSignature(signature);
+        user.returnBook(medium);
     }
 
     public double getFineForUser(User user) {
@@ -118,8 +118,8 @@ public class LibraryApp {
         this.dateServer = dateServer;
     }
 
-    public boolean userHasOverdueBooks(User user) {
-        return user.hasOverdueBooks(dateServer.getDate());
+    public boolean userHasOverdueMedia(User user) {
+        return user.hasOverdueMedia(dateServer.getDate());
     }
 
     public void setEmailServer(EmailServer mockEmailServer) {
@@ -130,7 +130,7 @@ public class LibraryApp {
         checkAdministratorLoggedIn();
         Calendar currentDate = dateServer.getDate();
         users.stream()
-                .filter(u -> u.hasOverdueBooks(currentDate))
+                .filter(u -> u.hasOverdueMedia(currentDate))
                 .forEach(u -> {
                     u.sendEmailReminder(emailServer, currentDate);
                 });
@@ -160,7 +160,7 @@ public class LibraryApp {
         if (!users.contains(user)) {
             throw new Exception("User not registered");
         }
-        if (!user.getBorrowedBooks().isEmpty()) {
+        if (!user.getBorrowedMedia().isEmpty()) {
             throw new Exception("Can't unregister user: user has still borrowed books/CDs");
         }
         if (user.getFine(dateServer.getDate()) > 0) {
@@ -171,23 +171,5 @@ public class LibraryApp {
 
     public boolean hasUser(String cpr) {
         return getUser(cpr) != null;
-    }
-
-    public boolean containsCdWithSignature(String signature) {
-        for (Cd cd : cds) {
-            if (cd.getSignature().equals(signature)) {
-                return true;
-            }
-        }
-        return false;
-
-    }
-
-    public void addCd(Cd cd) throws OperationNotAllowedException {
-        if (adminLoggedIn) {
-            cds.add(cd);
-        } else {
-            throw new OperationNotAllowedException("Administrator login required");
-        }
     }
 }
